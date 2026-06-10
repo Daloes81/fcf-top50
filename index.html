@@ -232,7 +232,9 @@
 
     .pl-row {
       background:var(--card); border:1px solid rgba(255,255,255,.05); border-radius:var(--r);
-      padding:13px 18px; display:grid; grid-template-columns:44px 1fr auto;
+      padding:13px 18px; display:grid;
+      grid-template-columns: 44px 1fr auto;
+      grid-template-areas: "rank info stats";
       align-items:center; gap:14px;
       transition:background .15s, border-color .15s, transform .15s;
       animation:fadeUp .35s ease both; opacity:0;
@@ -241,19 +243,27 @@
     .pl-row:hover { background:var(--card2); border-color:rgba(245,158,11,.15); transform:translateX(3px); }
     .pl-row.top10 { border-color:rgba(245,158,11,.1); }
 
-    .pl-rank { font-family:'Big Shoulders Display',sans-serif; font-size:20px; font-weight:700; text-align:right; color:var(--fog); }
+    .pl-rank { grid-area:rank; font-family:'Big Shoulders Display',sans-serif; font-size:20px; font-weight:700; text-align:right; color:var(--fog); }
     .top10 .pl-rank { color:var(--amber); }
 
-    .pl-info { min-width:0; }
+    .pl-info { grid-area:info; min-width:0; }
     .pl-name { font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .pl-team { font-size:10px; color:var(--fog); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
 
-    .pl-bar-row { display:flex; align-items:center; gap:7px; margin-top:7px; }
-    .pl-bar { flex:1; background:rgba(255,255,255,.05); border-radius:2px; height:3px; overflow:hidden; }
+    .pl-bar-row { display:flex; align-items:center; gap:10px; margin-top:7px; }
+    .pl-bar { flex:1; background:rgba(255,255,255,.05); border-radius:2px; height:3px; overflow:hidden; max-width:160px; }
     .pl-bar-fill { height:100%; background:linear-gradient(90deg,var(--amber),var(--amber2)); border-radius:2px; }
-    .pl-pts { font-family:'Space Mono',monospace; font-size:10px; color:var(--fog); flex-shrink:0; }
 
-    .pl-stats { display:flex; align-items:center; gap:18px; flex-shrink:0; }
+    .pl-score-pill {
+      display:inline-flex; align-items:center; gap:5px; flex-shrink:0;
+      padding:2px 10px;
+      background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.25);
+      border-radius:20px; font-family:'Space Mono',monospace;
+      font-size:11px; font-weight:700; color:var(--amber2);
+    }
+    .pl-score-pill span { color:var(--fog); font-weight:400; font-size:9px; text-transform:uppercase; letter-spacing:.5px; }
+
+    .pl-stats { grid-area:stats; display:flex; align-items:center; gap:18px; flex-shrink:0; }
     .st { text-align:center; min-width:32px; }
     .st-v { font-family:'Space Mono',monospace; font-size:15px; font-weight:700; }
     .st-l { font-size:9px; color:var(--fog); text-transform:uppercase; letter-spacing:.5px; margin-top:1px; }
@@ -283,8 +293,15 @@
 
     @media(max-width:600px) {
       .podium { grid-template-columns:1fr; }
-      .pl-row { grid-template-columns:36px 1fr; }
-      .pl-stats { display:none; }
+      .pl-row {
+        grid-template-columns: 36px 1fr;
+        grid-template-areas:
+          "rank info"
+          "stats stats";
+        row-gap:10px;
+      }
+      .pl-stats { justify-content:flex-start; flex-wrap:wrap; gap:14px; padding-left:50px; }
+      .pl-bar { max-width:none; }
       .sort-row { gap:4px; }
       .sort-btn { font-size:11px; padding:5px 9px; }
     }
@@ -763,7 +780,7 @@ function renderPodium(top) {
       <div class="pod-team">${escH(p.team)}</div>
       <div class="pod-goals">${p.gols || 0}</div>
       <div class="pod-goals-lbl">⚽ Gols</div>
-      <div class="pod-extra">${p.pj ? `${p.pj} PJ · ${p.eff.toFixed(2)} G/PJ · ${p.tit} Titular` : ''}</div>
+      <div class="pod-extra">${p.pj ? `${p.eff.toFixed(2)} G/PJ · ${p.pj} PJ · ${p.tit} Titular` : ''}</div>
       <div class="pod-score">${p.score.toFixed(1)} <span>pts</span></div>
     </div>`).join('');
 }
@@ -781,13 +798,13 @@ function renderList(players, maxS, startRank) {
           <div class="pl-team">${escH(p.team)}</div>
           <div class="pl-bar-row">
             <div class="pl-bar"><div class="pl-bar-fill" style="width:${bar}%"></div></div>
-            <span class="pl-pts">${p.score.toFixed(1)} pts</span>
+            <div class="pl-score-pill">${p.score.toFixed(1)} <span>pts</span></div>
           </div>
         </div>
         <div class="pl-stats">
           <div class="st goals"><div class="st-v">${p.gols||0}</div><div class="st-l">Gols</div></div>
-          <div class="st"><div class="st-v">${p.pj||0}</div><div class="st-l">PJ</div></div>
           <div class="st"><div class="st-v">${p.eff.toFixed(2)}</div><div class="st-l">G/PJ</div></div>
+          <div class="st"><div class="st-v">${p.pj||0}</div><div class="st-l">PJ</div></div>
           <div class="st"><div class="st-v">${p.tit||0}</div><div class="st-l">Titular</div></div>
           <a class="pl-link" href="${p.url}" target="_blank" title="Fitxa a fcf.cat">↗</a>
         </div>
