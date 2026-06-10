@@ -218,6 +218,14 @@
     .pod-goals   { font-family:'Big Shoulders Display',sans-serif; font-size:52px; font-weight:900; line-height:1; color:var(--amber); position:relative; }
     .pod-goals-lbl { font-size:10px; color:var(--fog); text-transform:uppercase; letter-spacing:1px; margin-top:2px; position:relative; }
     .pod-extra   { margin-top:10px; font-family:'Space Mono',monospace; font-size:10px; color:var(--fog); position:relative; }
+    .pod-score {
+      display:inline-flex; align-items:center; gap:5px;
+      margin-top:12px; padding:4px 12px; position:relative;
+      background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.25);
+      border-radius:20px; font-family:'Space Mono',monospace;
+      font-size:12px; font-weight:700; color:var(--amber2);
+    }
+    .pod-score span { color:var(--fog); font-weight:400; font-size:10px; text-transform:uppercase; letter-spacing:.5px; }
 
     /* ── PLAYER ROWS ─────────────────────────────────── */
     .player-list { display:flex; flex-direction:column; gap:7px; }
@@ -756,6 +764,7 @@ function renderPodium(top) {
       <div class="pod-goals">${p.gols || 0}</div>
       <div class="pod-goals-lbl">⚽ Gols</div>
       <div class="pod-extra">${p.pj ? `${p.pj} PJ · ${p.eff.toFixed(2)} G/PJ · ${p.tit} Titular` : ''}</div>
+      <div class="pod-score">${p.score.toFixed(1)} <span>pts</span></div>
     </div>`).join('');
 }
 
