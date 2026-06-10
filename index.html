@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FCF Top 50 · Els Millors Jugadors</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Figtree:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --night:    #040810;
+      --dugout:   #080f1e;
+      --card:     #0c1526;
+      --card2:    #111d33;
+      --amber:    #f59e0b;
+      --amber2:   #fbbf24;
+      --amber-d:  rgba(245,158,11,0.12);
+      --chalk:    #eff3ff;
+      --fog:      #4a5578;
+      --fog2:     #6b7899;
+      --green:    #10b981;
+      --red:      #ef4444;
+      --border:   rgba(245,158,11,0.1);
+      --r: 10px;
+    }
+
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+
+    body {
+      background: var(--night);
+      color: var(--chalk);
+      font-family: 'Figtree', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image:
+        linear-gradient(rgba(245,158,11,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,158,11,.025) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ── HERO ────────────────────────────────────────── */
+    .hero {
+      position:relative; z-index:1;
+      text-align:center; padding: 64px 20px 48px;
+    }
+
+    .hero-eyebrow {
+      display:inline-flex; align-items:center; gap:8px;
+      background:var(--amber-d); border:1px solid var(--border); border-radius:20px;
+      padding:5px 14px; font-size:11px; font-weight:700;
+      letter-spacing:2px; text-transform:uppercase; color:var(--amber); margin-bottom:24px;
+    }
+
+    .hero-title {
+      font-family:'Big Shoulders Display', sans-serif;
+      font-size:clamp(72px,14vw,140px); font-weight:900;
+      line-height:.88; letter-spacing:-2px; color:var(--chalk); position:relative;
+    }
+    .hero-title em { font-style:normal; color:var(--amber); }
+    .hero-title::after {
+      content:'50'; position:absolute; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      font-size:clamp(200px,40vw,420px); font-weight:900;
+      color:rgba(245,158,11,.04); pointer-events:none; z-index:-1; white-space:nowrap;
+    }
+
+    .hero-sub { margin-top:18px; font-size:15px; color:var(--fog2); }
+
+    /* ── SEARCH ──────────────────────────────────────── */
+    .search-wrap {
+      position:relative; z-index:1;
+      max-width:640px; margin:0 auto 40px; padding:0 20px;
+    }
+    .search-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:26px 28px 22px;
+    }
+    .search-label {
+      font-size:11px; font-weight:700; letter-spacing:1.8px;
+      text-transform:uppercase; color:var(--fog); margin-bottom:10px; display:block;
+    }
+    .search-row { display:flex; gap:10px; margin-bottom:14px; }
+    .url-field {
+      flex:1; background:var(--night); border:1.5px solid rgba(255,255,255,.07);
+      border-radius:8px; color:var(--chalk); font-family:'Figtree',sans-serif;
+      font-size:14px; padding:11px 15px; outline:none; transition:border-color .2s; min-width:0;
+    }
+    .url-field:focus { border-color:var(--amber); }
+    .url-field::placeholder { color:var(--fog); }
+
+    .btn-go {
+      background:var(--amber); color:#000; border:none; border-radius:8px;
+      font-family:'Figtree',sans-serif; font-size:14px; font-weight:700;
+      padding:11px 22px; cursor:pointer; white-space:nowrap;
+      transition:background .15s, transform .15s; flex-shrink:0;
+    }
+    .btn-go:hover   { background:var(--amber2); transform:translateY(-1px); }
+    .btn-go:active  { transform:none; }
+    .btn-go:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+
+    .search-foot { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+    .btn-ex {
+      background:none; border:1px solid rgba(255,255,255,.09); border-radius:6px;
+      cursor:pointer; font-family:'Figtree',sans-serif; font-size:12px; color:var(--fog2);
+      padding:5px 11px; transition:border-color .15s,color .15s;
+    }
+    .btn-ex:hover { border-color:var(--amber); color:var(--amber); }
+    .search-hint { font-size:12px; color:var(--fog); }
+
+    /* ── SCORING INFO ────────────────────────────────── */
+    .scoring-info { position:relative; z-index:1; max-width:640px; margin:0 auto 48px; padding:0 20px; }
+    .scoring-card {
+      background:var(--card); border:1px solid var(--border); border-radius:12px;
+      padding:18px 22px;
+    }
+    .scoring-title {
+      font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+      color:var(--amber); margin-bottom:10px;
+    }
+    .scoring-formula { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .formula-pill {
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);
+      border-radius:6px; font-family:'Space Mono',monospace;
+      font-size:11px; padding:4px 10px; color:var(--fog2);
+    }
+    .formula-pill strong { color:var(--chalk); }
+    .formula-op { font-size:12px; color:var(--fog); }
+
+    /* ── PROGRESS ────────────────────────────────────── */
+    .progress-wrap { position:relative; z-index:1; max-width:680px; margin:0 auto 56px; padding:0 20px; }
+    .progress-card {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:36px 32px; text-align:center;
+    }
+
+    .loader {
+      width:52px; height:52px; border:3px solid rgba(245,158,11,.15);
+      border-top-color:var(--amber); border-radius:50%;
+      margin:0 auto 22px; animation:spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .prog-title { font-family:'Big Shoulders Display',sans-serif; font-size:26px; font-weight:700; color:var(--amber); margin-bottom:6px; }
+    .prog-msg   { color:var(--fog2); font-size:14px; min-height:44px; margin-bottom:22px; line-height:1.5; }
+
+    .pbar-track { background:rgba(255,255,255,.06); border-radius:4px; height:5px; overflow:hidden; margin-bottom:16px; }
+    .pbar-fill  { height:100%; background:linear-gradient(90deg,var(--amber),var(--amber2)); border-radius:4px; transition:width .5s ease; width:0%; }
+
+    /* phase steps */
+    .phases {
+      display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:18px;
+    }
+    .phase-pill {
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08);
+      border-radius:6px; font-size:11px; font-weight:600; padding:5px 12px;
+      color:var(--fog); letter-spacing:.5px; transition:all .3s;
+    }
+    .phase-pill.active { background:var(--amber-d); border-color:rgba(245,158,11,.3); color:var(--amber); }
+    .phase-pill.done   { background:rgba(16,185,129,.1); border-color:rgba(16,185,129,.2); color:var(--green); }
+
+    .prog-counter { font-family:'Space Mono',monospace; font-size:13px; color:var(--fog2); margin-bottom:14px; }
+
+    .team-chips { display:flex; flex-wrap:wrap; gap:6px; justify-content:center; }
+    .t-chip {
+      background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07);
+      border-radius:4px; font-size:11px; padding:3px 9px; color:var(--fog); transition:all .3s;
+    }
+    .t-chip.active { border-color:var(--amber); color:var(--amber); }
+    .t-chip.done   { background:rgba(16,185,129,.1); border-color:rgba(16,185,129,.2); color:var(--green); }
+
+    /* ── ERROR ───────────────────────────────────────── */
+    .err-card {
+      background:rgba(239,68,68,.07); border:1px solid rgba(239,68,68,.2);
+      border-radius:12px; padding:22px 26px; color:#fca5a5; font-size:14px; line-height:1.6;
+    }
+    .err-card strong { color:#ef4444; }
+
+    /* ── RESULTS ─────────────────────────────────────── */
+    .results-wrap { position:relative; z-index:1; max-width:920px; margin:0 auto; padding:0 20px 80px; }
+
+    .results-hd {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:16px; margin-bottom:28px; flex-wrap:wrap;
+    }
+    .results-hd-left h2 { font-family:'Big Shoulders Display',sans-serif; font-size:32px; font-weight:700; }
+    .results-hd-meta    { color:var(--fog2); font-size:13px; margin-top:4px; }
+
+    .sort-row { display:flex; gap:6px; flex-wrap:wrap; }
+    .sort-btn {
+      background:none; border:1px solid rgba(255,255,255,.09); border-radius:6px; cursor:pointer;
+      font-family:'Figtree',sans-serif; font-size:12px; font-weight:600;
+      padding:6px 12px; color:var(--fog2); transition:all .15s;
+    }
+    .sort-btn:hover  { border-color:var(--amber); color:var(--amber); }
+    .sort-btn.active { background:var(--amber-d); border-color:rgba(245,158,11,.35); color:var(--amber); }
+
+    /* data source badge */
+    .source-badge {
+      display:inline-flex; align-items:center; gap:5px;
+      background:rgba(16,185,129,.1); border:1px solid rgba(16,185,129,.2);
+      border-radius:6px; font-size:11px; padding:4px 10px;
+      color:var(--green); margin-top:6px;
+    }
+
+    /* ── PODIUM ──────────────────────────────────────── */
+    .podium { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:24px; }
+    .pod-card {
+      background:var(--card); border:1px solid var(--border); border-radius:12px;
+      padding:22px 18px 18px; text-align:center; position:relative; overflow:hidden;
+      transition:border-color .2s, transform .2s;
+    }
+    .pod-card:hover { transform:translateY(-3px); }
+    .pod-card.p1 { border-color:rgba(245,158,11,.45); }
+    .pod-card.p1::before {
+      content:''; position:absolute; inset:0;
+      background:radial-gradient(ellipse at top,rgba(245,158,11,.07) 0%,transparent 60%);
+    }
+    .pod-bg-num {
+      position:absolute; top:-10px; right:8px;
+      font-family:'Big Shoulders Display',sans-serif; font-size:90px; font-weight:900;
+      line-height:1; color:rgba(255,255,255,.04); pointer-events:none;
+    }
+    .p1 .pod-bg-num { color:rgba(245,158,11,.08); }
+    .pod-medal   { font-size:28px; margin-bottom:10px; position:relative; }
+    .pod-name    { font-size:16px; font-weight:700; line-height:1.2; margin-bottom:3px; position:relative; }
+    .pod-team    { font-size:10px; color:var(--fog); text-transform:uppercase; letter-spacing:.7px; margin-bottom:14px; position:relative; }
+    .pod-goals   { font-family:'Big Shoulders Display',sans-serif; font-size:52px; font-weight:900; line-height:1; color:var(--amber); position:relative; }
+    .pod-goals-lbl { font-size:10px; color:var(--fog); text-transform:uppercase; letter-spacing:1px; margin-top:2px; position:relative; }
+    .pod-extra   { margin-top:10px; font-family:'Space Mono',monospace; font-size:10px; color:var(--fog); position:relative; }
+
+    /* ── PLAYER ROWS ─────────────────────────────────── */
+    .player-list { display:flex; flex-direction:column; gap:7px; }
+
+    .pl-row {
+      background:var(--card); border:1px solid rgba(255,255,255,.05); border-radius:var(--r);
+      padding:13px 18px; display:grid; grid-template-columns:44px 1fr auto;
+      align-items:center; gap:14px;
+      transition:background .15s, border-color .15s, transform .15s;
+      animation:fadeUp .35s ease both; opacity:0;
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+    .pl-row:hover { background:var(--card2); border-color:rgba(245,158,11,.15); transform:translateX(3px); }
+    .pl-row.top10 { border-color:rgba(245,158,11,.1); }
+
+    .pl-rank { font-family:'Big Shoulders Display',sans-serif; font-size:20px; font-weight:700; text-align:right; color:var(--fog); }
+    .top10 .pl-rank { color:var(--amber); }
+
+    .pl-info { min-width:0; }
+    .pl-name { font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .pl-team { font-size:10px; color:var(--fog); text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+
+    .pl-bar-row { display:flex; align-items:center; gap:7px; margin-top:7px; }
+    .pl-bar { flex:1; background:rgba(255,255,255,.05); border-radius:2px; height:3px; overflow:hidden; }
+    .pl-bar-fill { height:100%; background:linear-gradient(90deg,var(--amber),var(--amber2)); border-radius:2px; }
+    .pl-pts { font-family:'Space Mono',monospace; font-size:10px; color:var(--fog); flex-shrink:0; }
+
+    .pl-stats { display:flex; align-items:center; gap:18px; flex-shrink:0; }
+    .st { text-align:center; min-width:32px; }
+    .st-v { font-family:'Space Mono',monospace; font-size:15px; font-weight:700; }
+    .st-l { font-size:9px; color:var(--fog); text-transform:uppercase; letter-spacing:.5px; margin-top:1px; }
+    .st.goals .st-v { color:var(--amber); }
+
+    /* ── DIVIDER ─────────────────────────────────────── */
+    .rest-div { display:flex; align-items:center; gap:12px; margin:16px 0 12px; }
+    .rest-div span { font-size:11px; color:var(--fog); font-weight:600; letter-spacing:1px; text-transform:uppercase; flex-shrink:0; }
+    .rest-div::before, .rest-div::after { content:''; flex:1; height:1px; background:rgba(255,255,255,.06); }
+
+    /* ── FOOTER ──────────────────────────────────────── */
+    .footer {
+      position:relative; z-index:1; text-align:center;
+      padding:32px 20px; border-top:1px solid rgba(255,255,255,.05);
+      font-size:12px; color:var(--fog);
+    }
+
+    /* ── UTILS ───────────────────────────────────────── */
+    .hidden { display:none !important; }
+
+    @media(max-width:600px) {
+      .podium { grid-template-columns:1fr; }
+      .pl-row { grid-template-columns:36px 1fr; }
+      .pl-stats { display:none; }
+      .sort-row { gap:4px; }
+      .sort-btn { font-size:11px; padding:5px 9px; }
+    }
+    @media(max-width:420px) {
+      .search-row { flex-direction:column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HERO ──────────────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-eyebrow">⚽ Federació Catalana de Futbol</div>
+  <h1 class="hero-title">FCF <em>TOP</em> 50</h1>
+  <p class="hero-sub">Rànquing dels millors jugadors · Dades agregades de totes les actes + equips</p>
+</header>
+
+<!-- ── SEARCH ────────────────────────────────────────────── -->
+<section class="search-wrap" id="s-search">
+  <div class="search-card">
+    <label class="search-label">URL de la classificació de fcf.cat</label>
+    <div class="search-row">
+      <input type="url" id="url-in" class="url-field"
+        placeholder="https://www.fcf.cat/classificacio/2526/futbol-11/..."
+        autocomplete="off" />
+      <button id="btn-go" class="btn-go" onclick="run()">Generar Top 50 →</button>
+    </div>
+    <div class="search-foot">
+      <button class="btn-ex" onclick="loadEx()">📋 Exemple</button>
+      <span class="search-hint">Format: fcf.cat/classificacio/{temporada}/{esport}/{competicio}/{grup}</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── SCORING INFO ──────────────────────────────────────── -->
+<section class="scoring-info" id="s-info">
+  <div class="scoring-card">
+    <div class="scoring-title">Com es calcula la puntuació · Dades de totes les actes</div>
+    <div class="scoring-formula">
+      <div class="formula-pill"><strong>Gols × 10</strong></div>
+      <span class="formula-op">+</span>
+      <div class="formula-pill"><strong>(G/PJ) × 20</strong> efectivitat</div>
+      <span class="formula-op">+</span>
+      <div class="formula-pill"><strong>PJ × 0.5</strong> participació</div>
+      <span class="formula-op">+</span>
+      <div class="formula-pill"><strong>Titular% × 5</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROGRESS ──────────────────────────────────────────── -->
+<section class="progress-wrap hidden" id="s-prog">
+  <div class="progress-card">
+    <div class="loader"></div>
+    <div class="prog-title">Analitzant la Lliga…</div>
+    <p class="prog-msg" id="prog-msg">Iniciant l'anàlisi…</p>
+    <div class="pbar-track"><div class="pbar-fill" id="pbar"></div></div>
+
+    <!-- Phase indicators -->
+    <div class="phases">
+      <div class="phase-pill" id="ph1">① Equips</div>
+      <div class="phase-pill" id="ph2">② Resultats &amp; Actes</div>
+      <div class="phase-pill" id="ph3">③ Estadístiques equips</div>
+      <div class="phase-pill" id="ph4">④ Rànquing</div>
+    </div>
+
+    <div class="prog-counter" id="prog-counter"></div>
+    <div class="team-chips" id="t-chips"></div>
+  </div>
+</section>
+
+<!-- ── ERROR ─────────────────────────────────────────────── -->
+<section class="progress-wrap hidden" id="s-err">
+  <div class="err-card" id="err-body"></div>
+</section>
+
+<!-- ── RESULTS ───────────────────────────────────────────── -->
+<section class="results-wrap hidden" id="s-res">
+  <div class="results-hd">
+    <div class="results-hd-left">
+      <h2>🏆 Top 50 · Millors Jugadors</h2>
+      <p class="results-hd-meta" id="res-meta"></p>
+      <div id="src-badge"></div>
+    </div>
+    <div class="sort-row">
+      <button class="sort-btn active" onclick="doSort(this,'score')">⚡ Puntuació</button>
+      <button class="sort-btn"        onclick="doSort(this,'goals')">⚽ Gols</button>
+      <button class="sort-btn"        onclick="doSort(this,'eff')">📈 G/PJ</button>
+      <button class="sort-btn"        onclick="doSort(this,'games')">🎮 Partits</button>
+    </div>
+  </div>
+  <div class="podium" id="podium"></div>
+  <div class="rest-div"><span>Posicions 4 – 50</span></div>
+  <div class="player-list" id="plist"></div>
+</section>
+
+<!-- ── FOOTER ────────────────────────────────────────────── -->
+<footer class="footer">
+  FCF Top 50 · Dades de <a href="https://www.fcf.cat" target="_blank" style="color:var(--amber);text-decoration:none">fcf.cat</a> · Actes + Estadístiques d'equip
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════
+const API   = 'https://api.anthropic.com/v1/messages';
+const MODEL = 'claude-sonnet-4-20250514';
+const EX    = 'https://www.fcf.cat/classificacio/2526/futbol-11/infantil-primera-divisio-s13/grup-12';
+
+let ranked  = [];  // final top-50
+let sources = { actas: 0, teamStats: 0, golejadors: 0 };
+
+// ═══════════════════════════════════════════════════════
+// CLAUDE API
+// ═══════════════════════════════════════════════════════
+async function claude(userMsg, maxTok = 3500) {
+  const r = await fetch(API, {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({
+      model     : MODEL,
+      max_tokens: maxTok,
+      system    :
+        `Ets un extractor de dades web especialitzat en la Federació Catalana de Futbol (FCF).
+Utilitza web_search per llegir les pàgines que se't demanin.
+SEMPRE retorna únicament JSON vàlid: sense markdown, sense backticks, sense explicacions.
+Sigues exhaustiu i inclou TOTS els jugadors/dades que trobis.`,
+      messages  : [{ role: 'user', content: userMsg }],
+      tools     : [{ type: 'web_search_20250305', name: 'web_search' }]
+    })
+  });
+  if (!r.ok) {
+    const t = await r.text();
+    throw new Error(`API ${r.status}: ${t.slice(0, 200)}`);
+  }
+  return r.json();
+}
+
+function pickJson(data) {
+  const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+  try { return JSON.parse(text); } catch {}
+  const m = text.match(/(\[[\s\S]*\]|\{[\s\S]*\})/);
+  if (!m) throw new Error('Resposta sense JSON vàlid');
+  try { return JSON.parse(m[1]); } catch {
+    return JSON.parse(m[1].replace(/[\x00-\x1F\x7F]/g, ' '));
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE 1 — TEAMS
+// ═══════════════════════════════════════════════════════
+async function getTeams(compUrl) {
+  const d = await claude(
+    `Llegeix la pàgina de classificació FCF: ${compUrl}
+
+Extreu TOTS els equips de la taula de classificació.
+
+Retorna ÚNICAMENT aquest JSON (res més):
+[{"name":"Nom equip","id":"id si el trobes","url":"URL pàgina equip a fcf.cat si la trobes"}]`,
+    2000
+  );
+  const list = pickJson(d);
+  return Array.isArray(list) ? list : [];
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE 2 — MATCH URLS FROM RESULTATS
+// ═══════════════════════════════════════════════════════
+async function getMatchUrls(compUrl) {
+  const resultsUrl = compUrl.replace('/classificacio/', '/resultats/');
+  const d = await claude(
+    `Llegeix la pàgina de resultats FCF: ${resultsUrl}
+
+Extreu els URLs de totes les actes de partits que hagin estat disputats (no els pendents).
+Les actes solen tenir URLs amb "/acta/" al camí.
+
+Retorna ÚNICAMENT aquest JSON (res més):
+{"competition":"nom si el trobes","season":"temp si la trobes","matches":["url1","url2",...]}`,
+    3000
+  );
+  const obj = pickJson(d);
+  return {
+    competition : obj.competition || '',
+    season      : obj.season      || '',
+    matches     : Array.isArray(obj.matches) ? obj.matches.filter(u => u && u.includes('fcf.cat')) : []
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE 2b — PARSE ACTA BATCH
+// ═══════════════════════════════════════════════════════
+async function parseActaBatch(urls) {
+  const list = urls.map((u, i) => `${i + 1}. ${u}`).join('\n');
+  const d = await claude(
+    `Llegeix les actes d'aquests partits de la FCF:
+${list}
+
+Per cada acta extreu TOTS els jugadors que van participar (titulars i suplents) de cada equip,
+i per cada jugador: si era titular, i quants gols va marcar en aquell partit.
+
+Retorna ÚNICAMENT aquest JSON (res més):
+[{
+  "actaUrl":"url",
+  "players":[{
+    "name":"Nom Cognom",
+    "team":"Nom Equip",
+    "starter":true,
+    "goals":0
+  }]
+}]`,
+    5000
+  );
+  try {
+    const arr = pickJson(d);
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE 3 — TEAM STATS PAGES (suplement)
+// ═══════════════════════════════════════════════════════
+async function getTeamStats(team, compUrl) {
+  const teamUrl = team.url
+    || (team.id ? `https://www.fcf.cat/equip/${getSeason(compUrl).replace('/', '')}/${team.id}` : compUrl);
+
+  const d = await claude(
+    `Llegeix la pàgina de l'equip "${team.name}" a la FCF: ${teamUrl}
+
+Extreu les estadístiques de TOTS els jugadors de la temporada actual
+(taula amb columnes com PJ, PT/Titular, Gols…).
+
+Retorna ÚNICAMENT aquest JSON (res més):
+[{"name":"Nom","goals":0,"gamesPlayed":0,"starterGames":0}]
+
+Si no trobes estadístiques, retorna: []`,
+    2500
+  );
+  try {
+    const list = pickJson(d);
+    return Array.isArray(list)
+      ? list.filter(p => p.name).map(p => ({ ...p, team: team.name }))
+      : [];
+  } catch { return []; }
+}
+
+// ═══════════════════════════════════════════════════════
+// PHASE 2c — GOLEJADORS (suplement addicional)
+// ═══════════════════════════════════════════════════════
+async function getGolejadors(compUrl) {
+  const gUrl = compUrl.replace('/classificacio/', '/golejadors/');
+  const d = await claude(
+    `Llegeix la pàgina de golejadors FCF: ${gUrl}
+
+Extreu tots els jugadors de la llista.
+
+Retorna ÚNICAMENT aquest JSON (res més):
+[{"name":"Nom","team":"Equip","goals":0,"gamesPlayed":0,"starterGames":0}]
+
+Si no trobes la pàgina o està buida, retorna: []`,
+    3000
+  );
+  try {
+    const list = pickJson(d);
+    return Array.isArray(list) ? list : [];
+  } catch { return []; }
+}
+
+// ═══════════════════════════════════════════════════════
+// AGGREGATE ACTAS → per-player totals
+// ═══════════════════════════════════════════════════════
+function aggregateActas(actaResultsList) {
+  const map = new Map();
+  for (const acta of actaResultsList) {
+    for (const p of (acta.players || [])) {
+      if (!p.name || !p.team) continue;
+      const key = nk(p.name, p.team);
+      const e   = map.get(key) || { name: p.name, team: p.team, goals: 0, gamesPlayed: 0, starterGames: 0 };
+      e.goals       += (p.goals   || 0);
+      e.gamesPlayed += 1;
+      e.starterGames += p.starter ? 1 : 0;
+      map.set(key, e);
+    }
+  }
+  return Array.from(map.values());
+}
+
+// ═══════════════════════════════════════════════════════
+// MERGE ALL SOURCES
+// ═══════════════════════════════════════════════════════
+function mergeSources(fromActas, fromTeamStats, fromGolejadors) {
+  const map = new Map();
+
+  // 1) Acta data is the ground truth for players who appear there
+  for (const p of fromActas) {
+    if (!p.name) continue;
+    map.set(nk(p.name, p.team), { ...p, _src: 'acta' });
+  }
+
+  // 2) Team stats: add players not already in actas, or improve missing stats
+  for (const p of fromTeamStats) {
+    if (!p.name) continue;
+    const k = nk(p.name, p.team);
+    if (!map.has(k)) {
+      map.set(k, { ...p, _src: 'teamStats' });
+    } else {
+      // If acta data is missing goals but team stats has them, trust team stats
+      const e = map.get(k);
+      if ((e.goals || 0) === 0 && (p.goals || 0) > 0) e.goals = p.goals;
+      if (!e.gamesPlayed && p.gamesPlayed)             e.gamesPlayed = p.gamesPlayed;
+      if (!e.starterGames && p.starterGames)           e.starterGames = p.starterGames;
+    }
+  }
+
+  // 3) Golejadors: only add if player still missing
+  for (const p of fromGolejadors) {
+    if (!p.name) continue;
+    const k = nk(p.name, p.team);
+    if (!map.has(k)) {
+      map.set(k, { ...p, _src: 'golejadors' });
+    } else {
+      // Cross-check: if golejadors says more goals than what we have, flag it
+      const e = map.get(k);
+      if ((p.goals || 0) > (e.goals || 0)) e.goals = p.goals;
+    }
+  }
+
+  return Array.from(map.values());
+}
+
+// ═══════════════════════════════════════════════════════
+// SCORING
+// ═══════════════════════════════════════════════════════
+function calcScore(p) {
+  const g  = p.goals       || 0;
+  const pj = p.gamesPlayed || 0;
+  const pt = p.starterGames|| 0;
+  if (pj === 0 && g === 0) return 0;
+  const eff  = pj > 0 ? g / pj : 0;
+  const star = pj >= 3 ? pt / pj : 0;
+  return (g * 10)
+    + (pj >= 3 ? eff * 20 : 0)
+    + Math.min(pj * 0.5, 10)
+    + (star * 5);
+}
+
+function eff(p) { return (p.gamesPlayed || 0) > 0 ? p.goals / p.gamesPlayed : 0; }
+
+// ═══════════════════════════════════════════════════════
+// CONCURRENCY HELPER
+// ═══════════════════════════════════════════════════════
+async function runPool(tasks, concurrency) {
+  const results = [];
+  let idx = 0;
+  async function worker() {
+    while (idx < tasks.length) {
+      const i = idx++;
+      try { results[i] = await tasks[i](); }
+      catch { results[i] = null; }
+    }
+  }
+  await Promise.all(Array.from({ length: concurrency }, worker));
+  return results;
+}
+
+// ═══════════════════════════════════════════════════════
+// MAIN
+// ═══════════════════════════════════════════════════════
+async function run() {
+  const url = $('url-in').value.trim();
+  if (!url) { $('url-in').focus(); return; }
+  if (!url.includes('fcf.cat')) { alert('Si us plau, introdueix una URL de fcf.cat'); return; }
+
+  ranked = []; sources = { actas: 0, teamStats: 0, golejadors: 0 };
+  disableBtn(true);
+  show('s-prog'); hide('s-res'); hide('s-err');
+
+  let compInfo = { competition: '', season: '' };
+
+  try {
+
+    // ── Phase 1: Teams ──────────────────────────────
+    setPhase('ph1');
+    setP('① Carregant equips de la classificació…', 8);
+    const teams = await getTeams(url);
+    if (!teams.length) throw new Error('No s\'han trobat equips. Comprova que la URL sigui una pàgina de classificació de fcf.cat.');
+
+    markPhase('ph1');
+    $('t-chips').innerHTML = teams.map(t =>
+      `<span class="t-chip" id="chip-${slug(t.name)}">${t.name}</span>`
+    ).join('');
+
+    // ── Phase 2: Resultats + Actes ─────────────────
+    setPhase('ph2');
+    setP('② Obtenint resultats i URLs de les actes…', 16);
+
+    const [matchData, golejadorsData] = await Promise.all([
+      getMatchUrls(url),
+      getGolejadors(url)
+    ]);
+
+    compInfo.competition = matchData.competition;
+    compInfo.season      = matchData.season;
+    const allMatchUrls   = matchData.matches;
+    sources.golejadors   = golejadorsData.length;
+
+    let actaPlayers = [];
+
+    if (allMatchUrls.length > 0) {
+      const BATCH = 3;    // actes per crida
+      const POOL  = 4;    // crides en paral·lel
+      const batches = chunk(allMatchUrls, BATCH);
+
+      setP(`② Llegint ${allMatchUrls.length} actes de partits en lots de ${BATCH}…`, 20);
+      setCounter(0, allMatchUrls.length);
+
+      let done = 0;
+      const tasks = batches.map(batchUrls => async () => {
+        const res = await parseActaBatch(batchUrls);
+        done += batchUrls.length;
+        setCounter(done, allMatchUrls.length);
+        setP(`② Processades ${done} / ${allMatchUrls.length} actes…`,
+             20 + (done / allMatchUrls.length) * 40);
+        return res;
+      });
+
+      const batchResults = await runPool(tasks, POOL);
+      actaPlayers = aggregateActas(batchResults.flat().filter(Boolean));
+      sources.actas = actaPlayers.length;
+    }
+
+    markPhase('ph2');
+
+    // ── Phase 3: Team stats pages ──────────────────
+    setPhase('ph3');
+    setP('③ Llegint estadístiques de cada equip…', 62);
+
+    const teamTasks = teams.map(t => async () => {
+      const el = $(`chip-${slug(t.name)}`);
+      if (el) el.classList.add('active');
+      const players = await getTeamStats(t, url);
+      if (el) { el.classList.remove('active'); el.classList.add('done'); }
+      return players;
+    });
+
+    const teamResults  = await runPool(teamTasks, 4);
+    const teamPlayers  = teamResults.flat().filter(Boolean);
+    sources.teamStats  = teamPlayers.length;
+
+    markPhase('ph3');
+
+    // ── Phase 4: Merge & Rank ──────────────────────
+    setPhase('ph4');
+    setP('④ Fusionant fonts de dades i calculant el rànquing…', 88);
+    setCounter(null, null);
+
+    const merged = mergeSources(actaPlayers, teamPlayers, golejadorsData);
+
+    if (!merged.length) throw new Error(
+      'No s\'han pogut obtenir dades de jugadors.\n' +
+      'Verifica que la URL sigui una pàgina de classificació FCF vàlida i que la temporada tingui partits disputats.'
+    );
+
+    const scored = merged
+      .filter(p => p.name && p.name.trim())
+      .map(p => ({ ...p, score: calcScore(p), eff: eff(p) }))
+      .sort((a, b) => b.score - a.score);
+
+    // Deduplicate (same name + team)
+    const seen = new Set();
+    ranked = scored.filter(p => {
+      const k = nk(p.name, p.team);
+      if (seen.has(k)) return false;
+      seen.add(k); return true;
+    }).slice(0, 50);
+
+    markPhase('ph4');
+    await sleep(350);
+
+    renderResults(url, compInfo);
+    hide('s-prog'); show('s-res');
+
+  } catch (err) {
+    console.error(err);
+    $('err-body').innerHTML =
+      `<strong>❌ Error:</strong><br>${escH(err.message)}<br><br>` +
+      `<small>Format URL: <em>https://www.fcf.cat/classificacio/{temporada}/{esport}/{competicio}/{grup}</em></small>`;
+    show('s-err'); hide('s-prog');
+  }
+
+  disableBtn(false);
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+function renderResults(url, info) {
+  const maxS  = ranked[0]?.score || 1;
+  const teams = [...new Set(ranked.map(p => p.team))].length;
+  const seas  = info.season || getSeason(url);
+
+  $('res-meta').textContent =
+    (info.competition || 'Competició FCF') +
+    (seas ? ` · ${seas}` : '') +
+    ` · ${ranked.length} jugadors · ${teams} equips`;
+
+  const parts = [];
+  if (sources.actas   > 0) parts.push(`${sources.actas} registres d'actes`);
+  if (sources.teamStats>0) parts.push(`${sources.teamStats} d'estadístiques d'equip`);
+  if (sources.golejadors>0)parts.push(`${sources.golejadors} de golejadors`);
+  $('src-badge').innerHTML = parts.length
+    ? `<div class="source-badge">✅ Dades fusionades: ${parts.join(' + ')}</div>`
+    : '';
+
+  renderPodium(ranked.slice(0, 3));
+  renderList  (ranked.slice(3), maxS, 4);
+}
+
+function renderPodium(top) {
+  const medals = ['🥇','🥈','🥉'], cls = ['p1','p2','p3'];
+  $('podium').innerHTML = top.map((p, i) => `
+    <div class="pod-card ${cls[i]}">
+      <div class="pod-bg-num">${i+1}</div>
+      <div class="pod-medal">${medals[i]}</div>
+      <div class="pod-name">${escH(p.name)}</div>
+      <div class="pod-team">${escH(p.team)}</div>
+      <div class="pod-goals">${p.goals || 0}</div>
+      <div class="pod-goals-lbl">⚽ Gols</div>
+      <div class="pod-extra">${p.gamesPlayed ? `${p.gamesPlayed} PJ · ${p.eff.toFixed(2)} G/PJ` : ''}</div>
+    </div>`).join('');
+}
+
+function renderList(players, maxS, startRank) {
+  $('plist').innerHTML = players.map((p, i) => {
+    const rank  = startRank + i;
+    const bar   = Math.round((p.score / maxS) * 100);
+    const delay = (Math.min(i, 30) * .025).toFixed(3);
+    return `
+      <div class="pl-row ${rank <= 10 ? 'top10' : ''}" style="animation-delay:${delay}s">
+        <div class="pl-rank">${String(rank).padStart(2,'0')}</div>
+        <div class="pl-info">
+          <div class="pl-name">${escH(p.name)}</div>
+          <div class="pl-team">${escH(p.team)}</div>
+          <div class="pl-bar-row">
+            <div class="pl-bar"><div class="pl-bar-fill" style="width:${bar}%"></div></div>
+            <span class="pl-pts">${p.score.toFixed(1)} pts</span>
+          </div>
+        </div>
+        <div class="pl-stats">
+          <div class="st goals"><div class="st-v">${p.goals||0}</div><div class="st-l">Gols</div></div>
+          ${p.gamesPlayed ? `
+          <div class="st"><div class="st-v">${p.gamesPlayed}</div><div class="st-l">PJ</div></div>
+          <div class="st"><div class="st-v">${p.eff.toFixed(2)}</div><div class="st-l">G/PJ</div></div>` : ''}
+          ${p.starterGames ? `
+          <div class="st"><div class="st-v">${p.starterGames}</div><div class="st-l">Titular</div></div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function doSort(btn, criterion) {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const s = [...ranked].sort((a, b) => {
+    if (criterion === 'goals') return (b.goals||0)-(a.goals||0);
+    if (criterion === 'eff')   return b.eff-a.eff;
+    if (criterion === 'games') return (b.gamesPlayed||0)-(a.gamesPlayed||0);
+    return b.score-a.score;
+  });
+  const maxS = Math.max(...s.map(p => p.score), 1);
+  renderPodium(s.slice(0, 3));
+  renderList  (s.slice(3), maxS, 4);
+}
+
+// ═══════════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════════
+function $(id) { return document.getElementById(id); }
+function show(id) { $(id).classList.remove('hidden'); }
+function hide(id) { $(id).classList.add('hidden'); }
+function setP(msg, pct) { $('prog-msg').textContent = msg; $('pbar').style.width = pct + '%'; }
+function setPhase(id) {
+  document.querySelectorAll('.phase-pill').forEach(el => el.classList.remove('active'));
+  $(id).classList.add('active');
+}
+function markPhase(id) { $(id).classList.remove('active'); $(id).classList.add('done'); }
+function setCounter(done, total) {
+  $('prog-counter').textContent =
+    (done != null && total != null) ? `${done} / ${total} actes processades` : '';
+}
+function disableBtn(d) {
+  $('btn-go').disabled    = d;
+  $('btn-go').textContent = d ? 'Generant…' : 'Generar Top 50 →';
+}
+function loadEx() { $('url-in').value = EX; }
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+function chunk(arr, n) { return Array.from({length:Math.ceil(arr.length/n)},(_,i)=>arr.slice(i*n,(i+1)*n)); }
+function slug(s) { return (s||'').replace(/[^a-z0-9]/gi,'-').toLowerCase(); }
+function escH(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function getSeason(url) {
+  const m = url.match(/\/(\d{4})\//);
+  if (!m) return '';
+  const y = m[1];
+  return `${y.slice(0,2)}/${y.slice(2)}`;
+}
+function nk(name, team) {
+  return `${(name||'').trim().toLowerCase()}||${(team||'').trim().toLowerCase()}`;
+}
+
+// Enter key
+$('url-in').addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+</script>
+</body>
+</html>
