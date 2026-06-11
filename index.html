@@ -308,6 +308,74 @@
     @media(max-width:420px) {
       .search-row { flex-direction:column; }
     }
+
+    /* ── PRINT BUTTON ────────────────────────────────── */
+    .print-btn {
+      margin-left:auto;
+      border-color: rgba(245,158,11,.25);
+      color: var(--amber);
+    }
+    .print-btn:hover { background:var(--amber-d); }
+
+    /* ── PRINT-ONLY AREA (hidden on screen) ───────────── */
+    #print-area { display:none; }
+
+    @media print {
+      @page { size: A4 portrait; margin: 9mm; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+      body { background:#fff !important; color:#000 !important; }
+      body::before { display:none !important; }
+
+      .hero, .search-wrap, .scoring-info, .progress-wrap, .results-wrap, .footer, #s-err {
+        display:none !important;
+      }
+
+      #print-area { display:block !important; }
+
+      .pr-hdr {
+        display:flex; justify-content:space-between; align-items:baseline;
+        border-bottom: 1.5px solid #000; padding-bottom: 5px; margin-bottom: 8px;
+      }
+      .pr-title { font-family:'Big Shoulders Display',sans-serif; font-size:18px; font-weight:900; color:#000; }
+      .pr-meta  { font-size:9px; color:#444; text-align:right; line-height:1.5; }
+
+      .pr-cols { display:flex; gap:10px; }
+      .pr-col  { flex:1; min-width:0; }
+
+      .pr-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+      .pr-table th:nth-child(1) { width:5%; }
+      .pr-table th:nth-child(2) { width:36%; }
+      .pr-table th:nth-child(3) { width:22%; }
+      .pr-table th:nth-child(4),
+      .pr-table th:nth-child(5),
+      .pr-table th:nth-child(6),
+      .pr-table th:nth-child(7) { width:9%; }
+      .pr-table th:nth-child(8) { width:10%; }
+      .pr-table th, .pr-table td {
+        border:0.5px solid #ccc; padding:4px 5px;
+        font-size:9.5px; line-height:1.3; color:#000;
+      }
+      .pr-table thead th {
+        background:#eee !important; font-size:9px; text-transform:uppercase;
+        letter-spacing:.3px; font-weight:700; white-space:nowrap;
+      }
+      .pr-table tbody tr:nth-child(even) td { background:#f7f7f7 !important; }
+      .pr-table td.r  { text-align:center; width:22px; font-weight:700; color:#555; }
+      .pr-table td.nm { text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:0; }
+      .pr-table td.tm { text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:0; color:#666; font-size:9px; }
+      .pr-table td.n  { text-align:center; width:30px; }
+      .pr-table td.pt { text-align:center; width:38px; font-weight:700; }
+      .pr-table tr.top10 td { background:#fff6e0 !important; }
+      .pr-table tr.top3 td  { background:#ffecb3 !important; font-weight:700; }
+
+      .pr-foot {
+        margin-top:14px; padding-top:6px; border-top:0.5px solid #ccc;
+        font-size:8px; color:#666; line-height:1.6;
+      }
+
+      .pr-table, .pr-cols { page-break-inside:avoid !important; }
+    }
   </style>
 </head>
 <body>
@@ -396,11 +464,25 @@
       <button class="sort-btn"        onclick="doSort(this,'goals')">⚽ Gols</button>
       <button class="sort-btn"        onclick="doSort(this,'eff')">📈 G/PJ</button>
       <button class="sort-btn"        onclick="doSort(this,'games')">🎮 Partits</button>
+      <button class="sort-btn print-btn" onclick="window.print()">🖨️ Imprimir / PDF</button>
     </div>
   </div>
   <div class="podium" id="podium"></div>
   <div class="rest-div"><span>Posicions 4 – 50</span></div>
   <div class="player-list" id="plist"></div>
+</section>
+
+<!-- ── PRINT-ONLY TABLE (A4 vertical) ──────────────────────── -->
+<section id="print-area">
+  <div class="pr-hdr">
+    <div class="pr-title">⚽ FCF Top 50 — Millors Jugadors</div>
+    <div class="pr-meta" id="pr-meta"></div>
+  </div>
+  <div class="pr-cols" id="pr-cols"></div>
+  <div class="pr-foot">
+    Puntuació = (Gols×10) + (G/PJ×20 si PJ≥3) + min(PJ×0.5,10) + (Titular/PJ×5 si PJ≥3) ·
+    Dades oficials de fcf.cat (actes + fitxes individuals) · Generat amb FCF Top 50
+  </div>
 </section>
 
 <!-- ── FOOTER ────────────────────────────────────────────── -->
@@ -768,6 +850,48 @@ function renderResults(info) {
 
   renderPodium(ranked.slice(0, 3));
   renderList(ranked.slice(3), maxS, 4);
+  renderPrintTable(compDisp, info);
+}
+
+function renderPrintTable(compDisp, info) {
+  const teams = [...new Set(ranked.map(p => p.team))].length;
+  const today = new Date().toLocaleDateString('ca-ES', { day:'2-digit', month:'2-digit', year:'numeric' });
+
+  $('pr-meta').innerHTML =
+    `<strong>${escH(compDisp)}</strong> · Temporada ${escH(info.seasonStr)}<br>` +
+    `${ranked.length} jugadors · ${teams} equips · Generat el ${today}`;
+
+  function buildTable(players, startRank) {
+    const rows = players.map((p, i) => {
+      const rank = startRank + i;
+      const cls  = rank <= 3 ? 'top3' : (rank <= 10 ? 'top10' : '');
+      return `
+        <tr class="${cls}">
+          <td class="r">${rank}</td>
+          <td class="nm">${escH(p.name)}</td>
+          <td class="tm">${escH(p.team)}</td>
+          <td class="n">${p.gols||0}</td>
+          <td class="n">${p.eff.toFixed(2)}</td>
+          <td class="n">${p.pj||0}</td>
+          <td class="n">${p.tit||0}</td>
+          <td class="pt">${p.score.toFixed(1)}</td>
+        </tr>`;
+    }).join('');
+
+    return `
+      <table class="pr-table">
+        <thead><tr>
+          <th>#</th><th>Jugador</th><th>Equip</th>
+          <th>G</th><th>G/PJ</th><th>PJ</th><th>Tit</th><th>Pts</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  const half = Math.ceil(ranked.length / 2);
+  $('pr-cols').innerHTML =
+    `<div class="pr-col">${buildTable(ranked.slice(0, half), 1)}</div>` +
+    `<div class="pr-col">${buildTable(ranked.slice(half), half + 1)}</div>`;
 }
 
 function renderPodium(top) {
